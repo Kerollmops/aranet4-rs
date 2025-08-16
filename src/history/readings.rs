@@ -22,8 +22,9 @@ impl HistoryRequest {
 #[derive(Debug, Clone)]
 pub struct HistoryInformation {
     pub interval: chrono::Duration,
-    beginning: chrono::DateTime<Local>,
+    pub beginning: chrono::DateTime<Local>,
 }
+
 impl From<HistoryHeader> for HistoryInformation {
     fn from(header: HistoryHeader) -> Self {
         let interval = chrono::Duration::seconds(header.interval.into());
