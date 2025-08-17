@@ -48,7 +48,7 @@ pub struct HistoryReadings {
 
 impl HistoryReadings {
     /// Get a view of the data as a vector of [`DataRecord`]
-    pub fn as_records(&self) -> Vec<DataRecord> {
+    pub fn as_records<'a>(&'a self) -> impl Iterator<Item = DataRecord> + 'a {
         self.temperature
             .iter()
             .zip(self.humidity.iter())
@@ -63,6 +63,30 @@ impl HistoryReadings {
                     co2: *co2,
                 }
             })
-            .collect()
+    }
+
+    pub fn as_records_with_datetime<'a>(
+        &'a self,
+    ) -> impl Iterator<Item = (chrono::DateTime<Local>, DataRecord)> + 'a {
+        self.temperature
+            .iter()
+            .zip(self.humidity.iter())
+            .zip(self.co2.iter())
+            .zip(self.pressure.iter())
+            .enumerate()
+            .map(|(index, (((temperature, humidity), co2), pressure))| {
+                let HistoryInformation {
+                    interval,
+                    beginning,
+                } = self.information;
+                let datetime = beginning + (interval * index as i32);
+                let record = DataRecord {
+                    temperature: *temperature,
+                    humidity: *humidity,
+                    pressure: *pressure,
+                    co2: *co2,
+                };
+                (datetime, record)
+            })
     }
 }

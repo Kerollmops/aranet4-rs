@@ -26,7 +26,10 @@ mod tests {
             .get_historical_data()
             .await
             .expect("Cannot get historical data");
-        println!("Current Data: {:?}", cur_data.as_records());
+        println!(
+            "Current Data: {:?}",
+            cur_data.as_records().collect::<Vec<_>>()
+        );
         println!("Current Data Metadata: {:?}", cur_data.information);
     }
 }
